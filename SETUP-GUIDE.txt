@@ -1,0 +1,53 @@
+VED OPTICS – FULL SCRATCH & WIN SYSTEM
+======================================
+
+Included:
+- index.html: customer scratch page + admin login/dashboard
+- schema.sql: secure database tables and server-side prize/coupon functions
+- SETUP-GUIDE.txt: setup steps
+
+IMPORTANT HONEST STATUS
+-----------------------
+This is a deployment-ready starter package, not a live website yet. It needs a Supabase project and a hosting account. No public link or admin account can be activated from this chat without those accounts and their setup.
+
+SETUP (adult account owner should complete account registration)
+----------------------------------------------------------------
+A. Create a Supabase project at https://supabase.com
+B. In Supabase, open SQL Editor, paste all contents of schema.sql, and run it.
+C. In Supabase Project Settings > API, copy:
+   - Project URL
+   - anon/public key
+   Do NOT use the service_role key in index.html. Never share the service_role key.
+D. Edit index.html and replace:
+   PASTE_YOUR_SUPABASE_PROJECT_URL
+   PASTE_YOUR_SUPABASE_ANON_KEY
+E. In Supabase Authentication, create an admin user with email/password.
+F. In SQL Editor, run this query, replacing the email with the admin email:
+   insert into public.ved_admins(user_id, display_name)
+   select id, 'Ved Optics Admin' from auth.users where email='YOUR-ADMIN-EMAIL';
+G. Host the folder as a static site (for example, Netlify or Cloudflare Pages):
+   upload index.html as the site entry file. Keep it public.
+H. Open the hosted URL, switch to Admin Login, sign in, generate cards separately for each branch.
+I. Save the generated codes securely and give one unique code to each eligible customer.
+J. Admin marks the prize redeemed after checking the customer's screen and eligibility.
+
+REWARD ODDS CURRENTLY CONFIGURED IN schema.sql
+------------------------------------------------
+5% discount: 30%
+10% discount: 25%
+20% discount: 10%
+₹100 discount: 20%
+Free sunglasses: 8%
+Free lens upgrade: 7%
+
+These are sample probabilities. Before launch, edit them to match the actual offer budget and written terms. The card's prize is chosen on the server once per code and cannot be changed by the customer.
+
+SECURITY / LIMITATIONS
+----------------------
+- Admin-only functions require a signed-in user whose ID is present in ved_admins.
+- Customer scratch code is atomically changed from unused to scratched; reuse is rejected.
+- Admin redemption changes scratched to redeemed once.
+- Keep the Supabase project private to trusted administrators. Never put service_role credentials in the website.
+- Public scratch page collects customer name and mobile number. Publish a short privacy notice and use the data only for this campaign; restrict staff access and delete records when no longer needed.
+- This package does not include automated WhatsApp sending. The customer taps a WhatsApp claim button to send a prefilled message to 9824442507.
+- No real offer should be advertised until terms, minimum purchase, expiry, branch applicability, and prize quantities are finalized.

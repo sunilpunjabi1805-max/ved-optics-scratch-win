@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#071b49"><title>Ved Optics | Scratch & Win</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:18px;min-height:100vh;background:radial-gradient(circle at top,#315b9f,#071536 72%);font-family:Arial,sans-serif;color:#17264a}.wrap{width:min(100%,520px);margin:auto}.head{text-align:center;color:white;margin:8px 0 16px}.head h1{font-size:42px;margin:0;font-weight:900;letter-spacing:-2px}.head h1 span{color:#ffda68}.tag{display:inline-block;background:#ffda68;padding:7px 15px;border-radius:20px;font-weight:bold;font-size:13px}.panel{background:#fffaf0;border:3px solid #e6b83d;border-radius:22px;padding:19px;box-shadow:0 15px 38px #0007;margin-bottom:14px}.tabs{display:flex;gap:8px;margin-bottom:12px}.tab{flex:1;border:1px solid #d2d9e6;background:#fff;border-radius:12px;padding:11px;font-weight:bold;color:#14254b}.tab.active{background:#102d65;color:white}.hide{display:none!important}h2{margin:5px 0 12px;color:#071b49}.muted{font-size:13px;color:#59657c;line-height:1.5}.field{margin:10px 0}.field label{display:block;font-size:12px;font-weight:bold;margin-bottom:5px;color:#40506e}.field input,.field select{width:100%;padding:12px;border:1px solid #cbd2df;border-radius:10px;font-size:15px;background:white}.btn{border:0;border-radius:24px;background:linear-gradient(90deg,#d49b18,#ffdf78);padding:12px 17px;color:#1b294a;font-size:14px;font-weight:900;cursor:pointer;margin:5px 4px 5px 0}.btn.dark{background:#102d65;color:white}.btn.green{background:#16834c;color:white}.btn.red{background:#b52232;color:white}.btn:disabled{opacity:.5}.msg{font-size:13px;min-height:18px;color:#a51c2c}.success{color:#147743}.scratch{height:180px;border:3px solid #d5a72d;border-radius:16px;position:relative;overflow:hidden;background:linear-gradient(135deg,#fff0b8,#fff);display:grid;place-items:center;margin-top:12px}.prize{text-align:center;padding:10px}.emoji{font-size:35px}.big{font-size:30px;font-weight:900;color:#c51e32;margin:5px 0}.small{font-size:13px;color:#38445e}canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:pan-y;cursor:crosshair}.hint{text-align:center;font-size:13px;font-weight:bold;margin:10px}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.stat{background:#edf2fb;border-radius:12px;padding:12px}.stat b{display:block;font-size:23px;color:#0d2d67}.stat span{font-size:11px;color:#53617a}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:12px}th,td{text-align:left;padding:9px;border-bottom:1px solid #e2e5eb;white-space:nowrap}th{color:#30415f}.foot{text-align:center;color:#eef3ff;font-size:12px;line-height:1.7}.foot strong{color:#ffdc73}.notice{background:#fff3cd;border:1px solid #e5c56c;padding:10px;border-radius:10px;font-size:12px;line-height:1.5;color:#594716}
+</style></head>
+<body><main class="wrap">
+<header class="head"><h1>VED <span>OPTICS</span></h1><div class="tag">आपकी आंखों की सुरक्षा हमारा संकल्प</div></header>
+<div class="tabs"><button class="tab active" id="customerTab">Customer Scratch</button><button class="tab" id="adminTab">Admin Login</button></div>
+
+<section class="panel" id="customerPanel">
+<div class="muted">SPECIAL CUSTOMER OFFER</div><h2>🎁 SCRATCH &amp; WIN</h2>
+<p class="muted">Enter the details printed/provided with your special offer card.</p>
+<div class="field"><label>YOUR NAME</label><input id="custName" maxlength="60" placeholder="Customer name"></div>
+<div class="field"><label>MOBILE NUMBER</label><input id="custMobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number"></div>
+<div class="field"><label>UNIQUE SCRATCH CODE</label><input id="custCode" maxlength="32" placeholder="Enter your card code"></div>
+<button class="btn" id="scratchStart">START SCRATCHING</button><div class="msg" id="customerMsg"></div>
+<div class="scratch hide" id="scratchBox"><div class="prize"><div class="emoji" id="prizeEmoji">🎁</div><div class="big" id="prizeTitle">Your reward</div><div class="small" id="prizeDesc"></div></div><canvas id="foil"></canvas></div>
+<div class="hint hide" id="scratchHint">👆 Scratch the silver panel to reveal your reward</div>
+<button class="btn green hide" id="claimBtn">CLAIM ON WHATSAPP</button>
+<div class="notice">One unique card code can be scratched once. Final redemption is subject to store verification and campaign terms.</div>
+</section>
+
+<section class="panel hide" id="adminPanel">
+<h2>🔐 Store Admin</h2>
+<div id="loginBox">
+<p class="muted">Sign in using the admin account configured in Supabase.</p>
+<div class="field"><label>ADMIN EMAIL</label><input id="adminEmail" type="email" placeholder="Admin email"></div>
+<div class="field"><label>PASSWORD</label><input id="adminPassword" type="password" placeholder="Password"></div>
+<button class="btn dark" id="loginBtn">LOGIN</button><div class="msg" id="loginMsg"></div>
+</div>
+<div id="dashboard" class="hide">
+<div class="stats">
+<div class="stat"><b id="totalCount">—</b><span>Total cards</span></div>
+<div class="stat"><b id="scratchedCount">—</b><span>Scratched</span></div>
+<div class="stat"><b id="redeemedCount">—</b><span>Redeemed</span></div>
+<div class="stat"><b id="unusedCount">—</b><span>Not scratched</span></div>
+</div>
+<h3>Create scratch cards</h3>
+<div class="field"><label>NUMBER OF CODES (1–500)</label><input id="batchCount" type="number" min="1" max="500" value="50"></div>
+<div class="field"><label>BRANCH</label><select id="branch"><option>Chandkheda</option><option>Vaishnodevi Circle</option></select></div>
+<button class="btn" id="createBtn">GENERATE UNIQUE CODES</button>
+<button class="btn dark" id="refreshBtn">REFRESH REPORT</button>
+<button class="btn red" id="logoutBtn">LOG OUT</button>
+<div class="msg" id="adminMsg"></div>
+<div id="newCodes" class="muted"></div>
+<h3>Customer &amp; reward records</h3>
+<div class="tablewrap"><table><thead><tr><th>Code</th><th>Customer</th><th>Mobile</th><th>Branch</th><th>Prize</th><th>Status</th><th>Action</th></tr></thead><tbody id="records"></tbody></table></div>
+</div>
+</section>
+<footer class="foot"><strong>Chandkheda &amp; Vaishnodevi Circle, Ahmedabad</strong><br>Call / WhatsApp: 9824442507 · 8160947205</footer>
+</main>
+<script>
+const SUPABASE_URL="https://xbuauonrzwfgmogkkyoa.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_Rv4ebPqc3uMdc9oXWIJ0Hw_Zh-0hh_0";
+const configured=SUPABASE_URL.startsWith("https://")&&SUPABASE_ANON_KEY.startsWith("sb_publishable_");
+const sb=configured?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
+const $=id=>document.getElementById(id);
+function tab(which){$("customerPanel").classList.toggle("hide",which!=="customer");$("adminPanel").classList.toggle("hide",which!=="admin");$("customerTab").classList.toggle("active",which==="customer");$("adminTab").classList.toggle("active",which==="admin")}
+$("customerTab").onclick=()=>tab("customer");$("adminTab").onclick=()=>tab("admin");
+if(!configured){$("customerMsg").textContent="Setup required: connect the Supabase project URL and public anon key before using live cards.";$("loginMsg").textContent="Admin login becomes available after Supabase setup."}
+let current=null,draw=false,done=false,canvas=$("foil"),ctx=canvas.getContext("2d",{willReadFrequently:true});
+function setCanvas(){let r=$("scratchBox").getBoundingClientRect(),d=window.devicePixelRatio||1;canvas.width=r.width*d;canvas.height=r.height*d;ctx.setTransform(d,0,0,d,0,0);let g=ctx.createLinearGradient(0,0,r.width,r.height);g.addColorStop(0,"#c8cdd6");g.addColorStop(.5,"#f9fafb");g.addColorStop(1,"#9aa3b1");ctx.globalCompositeOperation="source-over";ctx.fillStyle=g;ctx.fillRect(0,0,r.width,r.height);ctx.fillStyle="#505a6c";ctx.textAlign="center";ctx.textBaseline="middle";ctx.font="900 24px Arial";ctx.fillText("SCRATCH HERE",r.width/2,r.height/2-8);ctx.font="bold 12px Arial";ctx.fillText("REVEAL YOUR REWARD",r.width/2,r.height/2+22);ctx.globalCompositeOperation="destination-out"}
+function scratchPoint(e){let r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+function scratchMove(e){if(!draw||done)return;let p=scratchPoint(e);ctx.beginPath();ctx.arc(p.x,p.y,22,0,Math.PI*2);ctx.fill();let a=ctx.getImageData(0,0,canvas.width,canvas.height).data,c=0,t=0;for(let i=3;i<a.length;i+=32){t++;if(a[i]<40)c++}if(c/t>.4)finishScratch()}
+async function finishScratch(){if(done)return;done=true;let r=canvas.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);$("scratchHint").textContent="🎉 Your reward is revealed!";let msg=encodeURIComponent("Hello Ved Optics, I won "+current.prize_label+". Card: "+current.code+". Name: "+current.customer_name+". Mobile: "+current.customer_mobile+". Please verify my reward.");$("claimBtn").onclick=()=>window.open("https://wa.me/919824442507?text="+msg,"_blank");$("claimBtn").classList.remove("hide")}
+canvas.addEventListener("pointerdown",e=>{if(done)return;draw=true;canvas.setPointerCapture(e.pointerId);scratchMove(e)});canvas.addEventListener("pointermove",scratchMove);["pointerup","pointercancel","lostpointercapture"].forEach(x=>canvas.addEventListener(x,()=>draw=false));
+$("scratchStart").onclick=async()=>{
+ $("customerMsg").textContent="";
+ if(!sb){$("customerMsg").textContent="Live service is not configured yet.";return}
+ let name=$("custName").value.trim(),mobile=$("custMobile").value.replace(/\D/g,""),code=$("custCode").value.trim().toUpperCase();
+ if(!name||!/^\d{10}$/.test(mobile)||code.length<4){$("customerMsg").textContent="Enter your name, valid 10-digit mobile and card code.";return}
+ $("scratchStart").disabled=true;
+ const {data,error}=await sb.rpc("scratch_card",{p_code:code,p_name:name,p_mobile:mobile});
+ $("scratchStart").disabled=false;
+ if(error||!data||!data.ok){$("customerMsg").textContent=(data&&data.message)||"Card code not valid or already used. Please contact Ved Optics.";return}
+ current={...data,code,customer_name:name,customer_mobile:mobile};
+ $("prizeEmoji").textContent=data.emoji;$("prizeTitle").textContent=data.prize_label;$("prizeDesc").textContent=data.prize_description;
+ $("scratchBox").classList.remove("hide");$("scratchHint").classList.remove("hide");$("scratchStart").classList.add("hide");setCanvas()
+};
+$("loginBtn").onclick=async()=>{if(!sb)return;let {error}=await sb.auth.signInWithPassword({email:$("adminEmail").value,password:$("adminPassword").value});$("loginMsg").textContent=error?error.message:"";if(!error){$("loginBox").classList.add("hide");$("dashboard").classList.remove("hide");loadRecords()}};
+$("logoutBtn").onclick=async()=>{await sb.auth.signOut();$("dashboard").classList.add("hide");$("loginBox").classList.remove("hide")};
+$("createBtn").onclick=async()=>{
+ let n=Math.max(1,Math.min(500,parseInt($("batchCount").value||"1",10))),branch=$("branch").value;
+ $("adminMsg").textContent="Generating codes…";
+ let {data,error}=await sb.rpc("admin_create_cards",{p_count:n,p_branch:branch});
+ if(error){$("adminMsg").textContent=error.message;return}
+ $("adminMsg").textContent="Created "+data.length+" unique codes. Save/export them now.";
+ $("newCodes").innerHTML="<b>New codes (copy and keep securely):</b><br>"+data.map(x=>x.code).join(", ");
+ loadRecords()
+};
+$("refreshBtn").onclick=()=>loadRecords();
+async function loadRecords(){
+ let {data,error}=await sb.rpc("admin_dashboard");
+ if(error){$("adminMsg").textContent=error.message;return}
+ $("totalCount").textContent=data.stats.total;$("scratchedCount").textContent=data.stats.scratched;$("redeemedCount").textContent=data.stats.redeemed;$("unusedCount").textContent=data.stats.unused;
+ $("records").innerHTML=data.cards.map(c=>`<tr><td>${esc(c.code)}</td><td>${esc(c.customer_name||"—")}</td><td>${esc(c.customer_mobile||"—")}</td><td>${esc(c.branch)}</td><td>${esc(c.prize_label||"—")}</td><td>${esc(c.status)}</td><td>${c.status==="scratched"?`<button class="btn green" data-id="${c.id}">Redeem</button>`:"—"}</td></tr>`).join("");
+ document.querySelectorAll("[data-id]").forEach(b=>b.onclick=async()=>{let {data,error}=await sb.rpc("admin_redeem_card",{p_card_id:b.dataset.id});$("adminMsg").textContent=error?error.message:(data.message||"Updated");loadRecords()})
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+</script></body></html>
